@@ -1,51 +1,43 @@
-## ADCESDemo_BraintreePayments
+# ADCES Demo - Braintree Payments Integration
 ## Charging Real $Money$ Every Month
 
 **demo live for another month on: http://adcesdemo2.azurewebsites.net/**
 
 ## Walkthrough
 
-mkdir ADCES
-cd ADCES
-yo aspnet
---- Web Application Basic [without Membership and Authorization]
---- Bootstrap
-cd "WebApplicationBasic"
-dotnet restore
-dotnet build 
-dotnet run
-
-—> SAFARI: go to http://localhost:5000
-—> SAFARI: go to https://www.braintreepayments.com/sandbox
-?create new account
-?activate account
-
-—> SAFARI: go to https://developers.braintreepayments.com/
-how it works!
-—> SAFARI: go to https://developers.braintreepayments.com/start/overview
-
+* mkdir ADCES
+* cd ADCES
+* yo aspnet
+* --- Web Application Basic [without Membership and Authorization]
+* --- Bootstrap
+* cd "WebApplicationBasic"
+* dotnet restore
+* dotnet build 
+* dotnet run
+* —> SAFARI: go to http://localhost:5000
+* —> SAFARI: go to https://www.braintreepayments.com/sandbox
+* ?create new account
+* ?activate account
+* —> SAFARI: go to https://developers.braintreepayments.com/
+* —> SAFARI: go to https://developers.braintreepayments.com/start/overview
 
 **set up client**
 https://developers.braintreepayments.com/start/hello-client/javascript/v3
-go to hosted fields
 https://developers.braintreepayments.com/guides/hosted-fields/overview/javascript/v3
 
 **In VS Code**
-Views / Home / Index.cshtml - remove the default carousel and div-row
-add the html from the hosted fields integration 
-add the CSS to the wwwroot/css/site.css
-add the JS to the <script type="text/javascript"></script> on the same page
-if the terminal was running, just hit refresh and see it working. 
-Put some data in and see the default alert('Submit your nonce to your server here!');
+* Views / Home / Index.cshtml - remove the default carousel and div-row
+* add the html from the hosted fields integration 
+* add the CSS to the wwwroot/css/site.css
+* add the JS to the <script type="text/javascript"></script> on the same page
+* if the terminal was running, just hit refresh and see it working. 
+* Put some data in and see the default alert('Submit your nonce to your server here!');
 
 ---
 **next part in C#, we're building our server side API**
-https://developers.braintreepayments.com/start/hello-server/dotnet
-
-in packages.json add the braintree nuget: "Braintree": "3.3.0"
-
-in HomeController.cs change the index to:
-(--watch the named parameter in the view--)
+* https://developers.braintreepayments.com/start/hello-server/dotnet
+* in packages.json add the braintree nuget: "Braintree": "3.3.0"
+* in HomeController.cs change the Index (--watch the named parameter in the view--)
 
         public IActionResult Index()
         {
@@ -63,15 +55,16 @@ in HomeController.cs change the index to:
             return View(model:token.ToString());
         }
 
-
---> Sandbox - account - myUser - scroll down - API Keys, Tokenization Keys, Encryption Keys
+* --> Sandbox - account - myUser - scroll down - API Keys, Tokenization Keys, Encryption Keys
 
 **On Index.cshtml add**
-@model string
+* @model string
+
 **and replace the authorization in our script**
-var authorization = '@Model';
+* var authorization = '@Model';
 
 **change the end with this**
+
 }, function (err, hostedFieldsInstance) {
     if (err) {
       console.error(err);
@@ -105,8 +98,8 @@ var authorization = '@Model';
 }
 </script>
 
-
 **final version of the HomeController.cs**
+
         BraintreeGateway gateway = new BraintreeGateway
         {
             Environment = Braintree.Environment.SANDBOX,
@@ -120,7 +113,6 @@ var authorization = '@Model';
             var token = gateway.ClientToken.generate();
             return View(model:token);
         }
-
 
         [HttpPost("Purchase")]
         public IActionResult Purchase([FromBody] NonceModel model)
@@ -164,17 +156,19 @@ https://developers.braintreepayments.com/guides/recurring-billing/overview
 **Now onto the web hook**
 
 **First we need a place to store messages, let’s hack a list in program.cs**
-public static List<string> messages = new List<string>();
+* public static List<string> messages = new List<string>();
 
 **Then retrieve the messages, in HomeController.cs**
+
 public IActionResult Contact()
-        {
-            ViewData["Message"] = "Webhooks";
-            return View(Program.messages);
-        }
+{
+    ViewData["Message"] = "Webhooks";
+    return View(Program.messages);
+}
 
 
 **And show them in the view Contact.cshtml**
+~~~~
 @model List<string>
 
 @{
@@ -187,10 +181,11 @@ public IActionResult Contact()
 {
     <div>@item</div>
 }
-
+~~~~
 
 ——-
 
+~~~~
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -210,10 +205,10 @@ namespace WebApplicationBasic.Controllers
         }
     }
 }
-
+~~~~
 
 **after testing in POSTMAN that the HttpPost works in the API, let’s link it to Braintree, push to Azure and restest**
-
+~~~~
         BraintreeGateway gateway = new BraintreeGateway
             {
                 Environment = Braintree.Environment.SANDBOX,
@@ -229,4 +224,4 @@ namespace WebApplicationBasic.Controllers
         string message = $"Webhook Received [{webhook.Timestamp.Value}] | Kind: [{webhook.Kind}]";
 
         Program.messages.Add(message);
-
+~~~~
