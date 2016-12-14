@@ -64,7 +64,7 @@ https://developers.braintreepayments.com/guides/hosted-fields/overview/javascrip
 * var authorization = '@Model';
 
 **change the end with this**
-
+~~~~
 }, function (err, hostedFieldsInstance) {
     if (err) {
       console.error(err);
@@ -97,6 +97,7 @@ https://developers.braintreepayments.com/guides/hosted-fields/overview/javascrip
   });
 }
 </script>
+~~~~
 
 **final version of the HomeController.cs**
 
@@ -149,11 +150,7 @@ https://developers.braintreepayments.com/guides/hosted-fields/overview/javascrip
     }
 
 **Everything should work! We’re creating the webhooks.**
-
-—————
 https://developers.braintreepayments.com/guides/recurring-billing/overview
-
-**Now onto the web hook**
 
 **First we need a place to store messages, let’s hack a list in program.cs**
 * public static List<string> messages = new List<string>();
