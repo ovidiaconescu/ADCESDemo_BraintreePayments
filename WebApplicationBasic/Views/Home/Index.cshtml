@@ -1,0 +1,113 @@
+@model string
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+
+<div class="demo-frame">  
+  <form action="/" method="post" id="cardForm" >
+    <label class="hosted-fields--label" for="card-number">Card Number</label>
+    <div id="card-number" class="hosted-field"></div>
+
+    <label class="hosted-fields--label" for="expiration-date">Expiration Date</label>
+    <div id="expiration-date" class="hosted-field"></div>
+
+    <label class="hosted-fields--label" for="cvv">CVV</label>
+    <div id="cvv" class="hosted-field"></div>
+
+    <label class="hosted-fields--label" for="postal-code">Postal Code</label>
+    <div id="postal-code" class="hosted-field"></div>
+
+    <div class="button-container">
+    <input type="submit" class="button button--small button--green" value="Purchase" id="submit"/>
+    </div>
+  </form>
+<div>
+
+<script src="https://js.braintreegateway.com/web/3.6.1/js/client.js"></script>
+<script src="https://js.braintreegateway.com/web/3.6.1/js/hosted-fields.js"></script>
+
+<script type="text/javascript">
+var form = document.querySelector('#cardForm');
+var authorization = '@Model'
+console.log('@Model');
+
+braintree.client.create({
+  authorization: authorization
+}, function(err, clientInstance) {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  createHostedFields(clientInstance);
+});
+
+function createHostedFields(clientInstance) {
+  braintree.hostedFields.create({
+    client: clientInstance,
+    styles: {
+      'input': {
+        'font-size': '16px',
+        'font-family': 'courier, monospace',
+        'font-weight': 'lighter',
+        'color': '#ccc'
+      },
+      ':focus': {
+        'color': 'black'
+      },
+      '.valid': {
+        'color': '#8bdda8'
+      }
+    },
+    fields: {
+      number: {
+        selector: '#card-number',
+        placeholder: '4111 1111 1111 1111'
+      },
+      cvv: {
+        selector: '#cvv',
+        placeholder: '123'
+      },
+      expirationDate: {
+        selector: '#expiration-date',
+        placeholder: 'MM/YYYY'
+      },
+      postalCode: {
+        selector: '#postal-code',
+        placeholder: '11111'
+      }
+    }
+  }, function (err, hostedFieldsInstance) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    submit.removeAttribute('disabled');
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      hostedFieldsInstance.tokenize(function (tokenizeErr, payload) {
+        if (tokenizeErr) {
+          console.error(tokenizeErr);
+          return;
+        }
+
+        $.ajax({
+              type: "POST",
+              url: '@Url.Action("Purchase", "Home")',
+              contentType: "application/json",
+              data: JSON.stringify({ nonce: payload.nonce }),
+              dataType: "json",
+              success: function (data) {
+                  window.location.href = data;
+              }
+          });
+      });
+    }, false);
+  });
+}
+</script>

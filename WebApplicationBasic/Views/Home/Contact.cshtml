@@ -1,0 +1,13 @@
+@model List<string>
+
+@{
+    ViewData["Title"] = "M-am hook-uit";
+}
+<h2>@ViewData["Title"].</h2>
+<h3>@ViewData["Message"]</h3>
+
+@foreach (var item in Model)
+{
+    <div>@item</div>
+    <br/>
+}
