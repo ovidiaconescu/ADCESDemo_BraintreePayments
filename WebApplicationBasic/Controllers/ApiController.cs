@@ -12,7 +12,6 @@ namespace WebApplicationBasic.Controllers
         [HttpPost]
         public IActionResult Hooked()
         {
-            
              BraintreeGateway gateway = new BraintreeGateway
                 {
                     Environment = Braintree.Environment.SANDBOX,
@@ -28,7 +27,6 @@ namespace WebApplicationBasic.Controllers
             string message = $"Webhook Received [{webhook.Timestamp.Value}] | Kind: [{webhook.Kind}]";
 
             Program.messages.Add(message);
-
 
             return Ok();
         }
