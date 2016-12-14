@@ -67,6 +67,5 @@ namespace WebApplicationBasic.Controllers
     public class NonceModel
     {
         public string nonce {get;set;}
-
     }
 }
